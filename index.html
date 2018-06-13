@@ -1,0 +1,295 @@
+<head>
+<style>
+.info { font-size: 1.3em; height: 350px; overflow-y: auto; outline: 2px solid black; background-color: white }
+.transcript { font-size: 1.4em; height: 443px; overflow-y: auto; outline: 2px solid black; margin-top: 2px; background-color: white }
+.downloadIcon { display: inline-block; width: 200px; height: 200px; position: relative; }
+#background { -webkit-filter: blur(5px); filter: blur(5px); z-index: -2 }
+
+@font-face {
+font-family: "petscop";
+src: url(Petscop.ttf);
+}
+</style>
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+function getVideoInfo(videoId, callback) {
+	var url = "https://www.googleapis.com/youtube/v3/videos?id=" + videoId + "&key=AIzaSyDnYZesA2J6VAdZatCJiUieYtcCgDrByLY&part=snippet&callback=?";
+	$.getJSON(url, function(data) { info = sortOutVideoInfo(data.items[0].snippet); callback(info); } );
+}
+
+function sortOutVideoInfo(data)
+{
+	date = new Date(data.publishedAt);
+	thumbnail = (data.thumbnails.maxres) ? data.thumbnails.maxres.url : data.thumbnails.high.url;
+	var info = { title: data.title, desc: data.description, time: date, pic: thumbnail};
+	
+	
+	return info;
+}
+</script>
+
+
+
+
+
+
+<script>
+videoIds = ["6e6RK8o1fcs", "teJDdkWHAdw", "FqyhmoMdeC8", "IwaRKux9eR8", "hta3dc5qDNw", "c_zCl8GV_dE", "sTDv4sgwios", "XPDbQMGFUL8", "nogEDJu2Z4c", "RAM0bcJnijg", "nXHUw2nw6aA", "y82EsETuMbM", "2ZqR5StCDt0"];
+
+videos = [];
+
+loading = true;
+
+</script>
+
+
+<body style="width: 1840px; overflow: hidden; font-family: petscop" id="body">
+
+<div style="width: 100%; height: 100%; position: absolute" id="background">
+</div>
+
+<div id="video" style="width: 1845px; height: 795px; float: left">
+	<div style="float: left; width: 321px; height: 795px">
+		<div id="infoBox" class="info">
+			<h2 id="videoTitle"></h2>
+			<div style="font-size: 0.89em; outline: 2px solid black"><span id="date"></span><span id="atText"></span><abbr id="time" title="UTC" style="cursor: help"></abbr></div><br>
+			<div id="desc"></div>
+		</div>
+		
+		<div id="tran" class="transcript">
+		</div>
+	</div>
+	
+	<div id="videoBox" style="position: relative; float: left; margin-left: 2px; width: 1060px; height: 795px; outline: 2px solid black; display: block"></div>
+
+	<div id="downloads" style="position: relative; float: left; width: 440px; height: 795px; display: block">
+		<a id="downloadVideo" download><svg class="downloadIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 533.333 533.333" style="margin-left: 150px; margin-top: 147.5px"><path fill="white" stroke="black" stroke-width=-5px d="M266.667,0C119.391,0,0,119.391,0,266.667c0,147.275,119.391,266.666,266.667,266.666c147.275,0,266.667-119.391,266.667-266.666C533.333,119.391,413.942,0,266.667,0zM266.667,483.333C147.005,483.333,50,386.328,50,266.667C50,147.005,147.005,50,266.667,50c119.661,0,216.667,97.005,216.667,216.667C483.333,386.328,386.328,483.333,266.667,483.333zM200,150l200,116.667L200,383.333V150z"></svg></a>
+		<a id="downloadAudio" download><svg class="downloadIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 489.164 489.164" style="margin-left: 150px; margin-top: 100px"><path fill="white" stroke="black" stroke-width=-5px d="M159.582,75.459v285.32c-14.274-10.374-32.573-16.616-52.5-16.616c-45.491,0-82.5,32.523-82.5,72.5s37.009,72.5,82.5,72.5s82.5-32.523,82.5-72.5V168.942l245-60.615v184.416c-14.274-10.374-32.573-16.616-52.5-16.616c-45.491,0-82.5,32.523-82.5,72.5s37.009,72.5,82.5,72.5s82.5-32.523,82.5-72.5V0L159.582,75.459z"></svg></a>
+		
+	</div>
+</div>
+
+<div id="videoList" style="float: left; margin-top: 2px; width: 1845px; height: 236.5px; outline: 2px solid black; overflow-x: auto; overflow-y: none; white-space: nowrap">
+</div>
+
+</body>
+
+<div style="display: none">
+</div>
+
+<script>
+
+function createVideo(number)
+{
+	number--;
+	
+	var video = {watchElement: null, info: null};
+	watch = document.createElement("iframe");
+	watch.width = 1060;
+	watch.height = 795;
+	watch.src = "https://www.youtube.com/embed/" + videoIds[number] + "?start=0&enablejsapi=1&rel=0&showinfo=0";
+	watch.setAttribute("frameborder", "0");
+	watch.setAttribute("allow", "encrypted-media");
+	watch.setAttribute("allowfullscreen", "true");
+	watch.style = "position: absolute; display: none;"
+	document.getElementById("videoBox").appendChild(watch);
+	
+	video.watchElement = watch;
+	
+	var info = document.createElement("div");
+	
+	var time = "";
+	var desc = "";
+		
+	var icon = document.createElement("img");
+	icon.style = "width: 393.77777777px; height: 221.5px; z-index: -1";
+	icon.selected = false;
+	icon.blur = 1;
+	
+	var selection = document.createElement("div");
+	var digit = document.createElement("div");
+	digit.style = "position: relative; float: left; text-align: center; vertical-align: middle; width: 100px; height: 0px; font-family: arial; font-size: 120px; bottom: 185px; color: #FFFFFF; text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000";
+	digit.innerHTML = number + 1;
+	selection.digit = digit;
+	
+	selection.appendChild(icon);
+	selection.appendChild(digit);
+	selection.style = "width: 393.7777777px; height: 221.5px; outline: 2px solid black; display: inline-block";
+	selection.addEventListener("click", function() { setVideo(number + 1); });
+	
+	video.selection = selection;
+	
+	
+	
+	getVideoInfo(videoIds[number], function(data)
+	{
+		desc = data.desc.replace(/\n/g, "<br>");
+		time = data.time;
+		dayPrefix = "th";
+		if(time.getDate() < 11 || time.getDate() > 13) {
+		switch(time.getDate() % 10)
+		{
+		case 1:
+			dayPrefix = "st"; break;
+		case 2:
+			dayPrefix = "nd"; break;
+		case 3:
+			dayPrefix = "rd"; break;
+		}
+		}
+		
+		monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+		
+		
+		hours = time.getHours();
+		if(hours < 10) hours = "0" + time.getHours();
+		
+		minutes = time.getMinutes();
+		if(minutes < 10) minutes = "0" + time.getMinutes();
+		
+		seconds = time.getSeconds();
+		if(seconds < 10) seconds = "0" + time.getSeconds();
+		
+		dayTime = hours + ":" + minutes + ":" + seconds;
+		
+		date = time.getDate() + dayPrefix + " of " + monthNames[time.getMonth()] + ", " + time.getFullYear();
+		
+		tran = document.createElement("span");
+		tran.paragraphs = [];
+		
+		$.get("transcripts/Petscop " + (number + 1) + ".txt", function(text) {
+			
+			lines = text.split("\n");
+			
+			for(i = 0; i < lines.length; i++)
+			{
+				currentParagraph = document.createElement("p");
+				currentParagraph.innerHTML = lines[i];
+				tran.paragraphs.push(currentParagraph);
+				tran.appendChild(currentParagraph);
+			}
+			
+		}, "text");
+		
+		info.date = date;
+		info.time = dayTime;
+		info.desc = desc;
+		info.tran = tran;
+		info.icon = icon;
+		
+		video.info = info;
+		
+		
+		
+		icon.src = data.pic;
+		
+		background = document.createElement("div");
+		background.style = "width: 100%; height: 100%; position: absolute; background-size: cover; background-image: url(" + icon.src + "); opacity: 0";
+		document.getElementById("background").appendChild(background);
+		video.background = background;
+		
+		
+		
+		document.getElementById("videoList").appendChild(selection);
+		
+		videos.push(video);
+		
+		if(number < videoIds.length - 1)
+			createVideo(number + 2);
+		else
+		{
+			loading = false;
+			setInterval(selectAnimation, 10);
+		}
+		
+	});
+	
+}
+
+var currentTran;
+
+function setVideo(number) {
+	
+	number--;
+	
+	video = videos[number];
+	
+	for(i = 0; i < videos.length; i++)
+	{
+		otherVideo = videos[i];
+		otherVideo.watchElement.style.display = "none";
+		pauseVideo(otherVideo);
+		otherVideo.info.icon.selected = false;
+	}
+	
+	video.info.icon.selected = true;
+	video.watchElement.style.display = "";
+	if(!video.autoplayed) {
+		playVideo(video);
+		video.autoplayed = true;
+	}
+	
+	document.getElementById("date").innerHTML = video.info.date;
+	document.getElementById("time").innerHTML = video.info.time;
+	document.getElementById("desc").innerHTML = video.info.desc;
+	document.getElementById("downloadVideo").href = "videos/Petscop " + (number + 1) + ".mp4";
+	document.getElementById("downloadAudio").href = "audio/Petscop " + (number + 1) + ".mp3";
+	document.getElementById("videoTitle").innerHTML = "Petscop " + (number + 1);
+	
+	if(currentTran)
+		document.getElementById("tran").removeChild(currentTran);
+	document.getElementById("tran").appendChild(video.info.tran);
+	currentTran = video.info.tran;
+	
+	
+	
+	document.getElementById("body").style.backgroundImage = "url(" + video.info.icon.src + ")";
+	document.getElementById("body").style.backgroundSize = "cover";
+	
+	document.getElementById("atText").innerHTML = ", at ";
+}
+
+createVideo(1);
+
+
+function pauseVideo(video)
+{
+	video.watchElement.contentWindow.postMessage('{"event":"command","func":"' + "pauseVideo" + '","args":""}', '*');
+}
+
+function playVideo(video)
+{
+	video.watchElement.contentWindow.postMessage('{"event":"command","func":"' + "playVideo" + '","args":""}', '*');
+}
+
+
+
+
+function selectAnimation()
+{
+	for(i = 0; i < videos.length; i++)
+	{
+		video = videos[i];
+		icon = video.info.icon;
+		if(icon.selected && icon.blur > 0)
+			icon.blur -= 0.1;
+		if(!icon.selected && icon.blur < 1)
+			icon.blur += 0.1;
+		
+		if(icon.blur > 1)
+			icon.blur = 1;
+		if(icon.blur < 0)
+			icon.blur = 0;
+		
+		
+		icon.style.filter = "blur(" + (icon.blur * 5) + "px)";
+		icon.style.WebkitFilter = "blur(" + (icon.blur * 5) + "px)";
+		
+		video.selection.digit.style.color = "rgb(255, " + 255 * icon.blur + ", " + 255 * icon.blur + ")";
+		
+		video.background.style.opacity = 1 - icon.blur;
+	}
+}
+</script>
