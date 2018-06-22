@@ -88,6 +88,8 @@ loading = true;
 
 <script>
 
+var currVideo = 0;
+
 function createVideo(number)
 {
 	number--;
@@ -111,7 +113,7 @@ function createVideo(number)
 	var desc = "";
 		
 	var icon = document.createElement("img");
-	icon.style = "width: 393.77777777px; height: 221.5px; z-index: -1";
+	icon.style = "width: 393.77777777px; height: 221.5px; z-index: -1; -webkit-filter: blur(5px); filter: blur(5px)";
 	icon.selected = false;
 	icon.blur = 1;
 	
@@ -124,7 +126,11 @@ function createVideo(number)
 	selection.appendChild(icon);
 	selection.appendChild(digit);
 	selection.style = "width: 393.7777777px; height: 221.5px; outline: 2px solid black; display: inline-block; cursor: pointer";
-	selection.addEventListener("click", function() { setVideo(number + 1); });
+	selection.addEventListener("click", function() {
+		if(currVideo != number)
+			setVideo(number + 1);
+		}
+	);
 	
 	video.selection = selection;
 	
@@ -256,6 +262,8 @@ function setVideo(number) {
 	document.getElementById("body").style.backgroundSize = "cover";
 	
 	document.getElementById("atText").innerHTML = ", at ";
+	
+	currVideo = number;
 }
 
 createVideo(1);
@@ -295,7 +303,7 @@ function selectAnimation()
 		icon.style.WebkitFilter = "blur(" + (icon.blur * 5) + "px)";
 		
 		video.selection.digit.style.color = "rgb(255, " + 255 * icon.blur + ", " + 255 * icon.blur + ")";
-		
+		video.selection.style.cursor = (icon.selected) ? "default" : "pointer";
 		video.background.style.opacity = 1 - icon.blur;
 	}
 }
