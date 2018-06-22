@@ -5,7 +5,7 @@
 <link rel="icon" href="icon.png">
 
 <style>
-.info { font-size: 1.3em; height: 350px; overflow-y: auto; outline: 2px solid black; background-color: white }
+.info { font-size: 1.3em; overflow-y: hidden; outline: 2px solid black; background-color: white }
 .transcript { font-size: 1.4em; height: 413px; overflow-y: auto; margin-top: 2px; background-color: white }
 .downloadIcon { display: inline-block; width: 200px; height: 200px; position: relative; }
 #background { -webkit-filter: blur(5px); filter: blur(5px); z-index: -2 }
@@ -60,7 +60,7 @@ loading = true;
 		<div id="infoBox" class="info">
 			<h2 id="videoTitle" style="height: 32px"></h2>
 			<div style="font-size: 0.89em; outline: 2px solid black; height: 17px"><span id="date"></span><span id="atText"></span><abbr id="time" title="UTC" style="cursor: help"></abbr></div><br>
-			<div id="desc"></div>
+			<div id="desc" style="height: 227px; overflow-y: auto"></div>
 		</div>
 		
 		<div style="height: 443px; outline: 2px solid black; margin-top: 2px; background-color: white">
