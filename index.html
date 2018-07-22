@@ -173,19 +173,7 @@ function createVideo(number)
 		tran = document.createElement("span");
 		tran.paragraphs = [];
 		
-		$.get("transcripts/Petscop " + (number + 1) + ".txt", function(text) {
-			
-			lines = text.split("\n");
-			
-			for(i = 0; i < lines.length; i++)
-			{
-				currentParagraph = document.createElement("p");
-				currentParagraph.innerHTML = lines[i];
-				tran.paragraphs.push(currentParagraph);
-				tran.appendChild(currentParagraph);
-			}
-			
-		}, "text");
+		getScript(tran, number);
 		
 		info.date = date;
 		info.time = dayTime;
@@ -220,6 +208,22 @@ function createVideo(number)
 		
 	});
 	
+}
+
+function getScript(tranObject, number)
+{
+	$.get("transcripts/Petscop " + (number + 1) + ".txt", function(text) {
+		lines = text.split("\n");
+		
+		for(i = 0; i < lines.length; i++)
+		{
+			currentParagraph = document.createElement("p");
+			currentParagraph.innerHTML = lines[i];
+			tranObject.paragraphs.push(currentParagraph);
+			tranObject.appendChild(currentParagraph);
+		}
+		
+	}, "text");
 }
 
 var currentTran;
